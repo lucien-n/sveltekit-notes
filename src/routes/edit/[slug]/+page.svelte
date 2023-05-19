@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { noteStore, type Note } from '$lib/stores';
+	import { updateFireNote } from '$lib/db.js';
+	import { noteStore, type Note, user } from '$lib/stores';
 	import { InputChip, toastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 
 	export let data;
@@ -12,18 +13,21 @@
 
 	const toast: ToastSettings = {
 		message: 'Note edited successfully',
-		background: 'variant-ghost-success'
+		background: 'variant-glass-success'
 	};
 
 	function editNote(): void {
-		noteStore.update((notes) => [
-			...notes.filter((note) => note.id !== noteId),
-			{
-				id: noteId,
-				content,
-				tags
-			}
-		]);
+		const note: Note = {
+			id: noteId,
+			content,
+			tags
+		};
+		noteStore.update((notes) => [...notes.filter((note) => note.id !== noteId), note]);
+
+		if ($user) {
+			updateFireNote($user.uid, note);
+		}
+
 		content = '';
 		tags = [];
 		toastStore.trigger(toast);

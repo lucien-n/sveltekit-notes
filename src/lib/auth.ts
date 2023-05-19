@@ -4,7 +4,7 @@ import {
 	signInWithPopup,
 	type UserCredential
 } from '@firebase/auth';
-import { auth, googleAuthProvider } from './firebase';
+import { auth } from './firebase';
 
 export function signInWithEmailAndPassword(
 	email: string,
@@ -13,7 +13,7 @@ export function signInWithEmailAndPassword(
 	return signInWithEmailAndPassword(email, password);
 }
 
-export function signUnWithEmailAndPassword(
+export function signUpWithEmailAndPassword(
 	email: string,
 	password: string
 ): Promise<UserCredential> {
@@ -21,7 +21,7 @@ export function signUnWithEmailAndPassword(
 }
 
 export function signInWithGoogle(): Promise<UserCredential> {
-	return signInWithPopup(auth, new GoogleAuthProvider());
+	 return signInWithPopup(auth, new GoogleAuthProvider()); 
 }
 
 export function signOut(): Promise<void> {

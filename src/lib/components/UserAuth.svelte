@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import {
 		signInWithEmailAndPassword,
 		signInWithGoogle,
-		signUnWithEmailAndPassword as signUpWithEmailAndPassword
+		signUpWithEmailAndPassword as signUpWithEmailAndPassword
 	} from '$lib/auth';
 	import { toastStore } from '@skeletonlabs/skeleton';
 
@@ -16,7 +17,6 @@
 	async function authenticate(mode: string): Promise<void> {
 		if (mode === 'google') {
 			signInWithGoogle();
-			goto('/');
 			return;
 		}
 
@@ -38,13 +38,9 @@
 
 		try {
 			if (mode === 'signin') {
-				await signInWithEmailAndPassword(email, password).then(() => {
-					goto('/ ');
-				});
+				signInWithEmailAndPassword(email, password);
 			} else if (mode === 'signup') {
-				await signUpWithEmailAndPassword(email, password).then(() => {
-					goto('/');
-				});
+				signUpWithEmailAndPassword(email, password);
 			}
 		} catch (error) {
 			toastStore.trigger({
