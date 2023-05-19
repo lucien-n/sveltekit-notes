@@ -40,5 +40,10 @@
 		"vite": "^4.3.0",
 		"vitest": "^0.25.3"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"@firebase/auth": "^0.23.2",
+		"@firebase/firestore": "^3.12.0",
+		"firebase": "^9.22.0"
+	}
 }

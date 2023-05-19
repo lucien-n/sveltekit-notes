@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { noteStore, type Note } from '$lib/stores';
+	import { noteStore, type Note, filterSettings } from '$lib/stores';
 	import {
 		toastStore,
 		type ModalSettings,
@@ -16,11 +16,11 @@
 
 	const noteDeletedToast: ToastSettings = {
 		message: 'Note deleted successfully',
-		background: 'variant-ghost-success'
+		background: 'variant-glass-success'
 	};
 	const noteNotDeletedToast: ToastSettings = {
 		message: 'Note not deleted',
-		background: 'variant-ghost-error'
+		background: 'variant-glass-error'
 	};
 
 	function deleteNote(noteId: string): void {
@@ -32,6 +32,7 @@
 				if (r) {
 					noteStore.update((notes) => notes.filter((n) => n.id !== noteId));
 					toastStore.trigger(noteDeletedToast);
+					$filterSettings.refresh++;
 					return;
 				}
 				toastStore.trigger(noteNotDeletedToast);
@@ -97,13 +98,14 @@
 		{note.content}
 	</div>
 	<div class="flex flex-wrap gap-1">
-		{#each note.tags as tag}
+		{#each note.tags as tag, i}
 			<span
+				in:fly={{ x: -140, duration: 200, delay: 50 * (i + 1) }}
 				on:keypress={(event) => {
 					if (event.key === 'Enter') dispatch('filter', tag);
 				}}
 				on:click={() => dispatch('filter', tag)}
-				class="badge variant-filled-secondary">{tag}</span
+				class="badge variant-filled-secondary hover:cursor-pointer hover:underline">{tag}</span
 			>
 		{/each}
 	</div>
