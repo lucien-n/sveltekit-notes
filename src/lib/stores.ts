@@ -21,3 +21,9 @@ export const filterSettings: Writable<FilterSettings> = writable({
 	refresh: 1
 });
 export const user: Writable<User | null> = writable();
+
+export const refreshNotes = () => {
+	filterSettings.subscribe((settings) => {
+		settings.refresh++
+	})
+}

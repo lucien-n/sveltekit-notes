@@ -6,8 +6,17 @@
 	import { AppShell, Drawer, Toast, Modal } from '@skeletonlabs/skeleton';
 	import NavigationDrawer from '$lib/components/NavigationDrawer.svelte';
 	import NavigationBar from '$lib/components/NavigationBar.svelte';
+	import { noteStore, user } from '$lib/stores';
+	import { goto } from '$app/navigation';
+	import { postFireNotes } from '$lib/db';
 
 	export let data;
+
+	const unsubscribe = user.subscribe((usr) => {
+		if (!usr) return;
+		postFireNotes(usr.uid, $noteStore);
+		goto('/');
+	});
 </script>
 
 <Toast position="tr" />
@@ -17,7 +26,7 @@
 	<NavigationDrawer />
 </Drawer>
 
-<AppShell slotSidebarLeft="w-0 md:w-80 bg-surface-500/10 ">
+<AppShell slotSidebarLeft="w-0 md:w-80 lg:w-1/4 bg-surface-500/10 ">
 	<svelte:fragment slot="header">
 		<NavigationBar />
 	</svelte:fragment>

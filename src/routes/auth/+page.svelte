@@ -2,4 +2,6 @@
 	import UserAuth from '$lib/components/UserAuth.svelte';
 </script>
 
-<UserAuth />
+<div class="flex h-full w-full items-center justify-center overflow-hidden">
+	<UserAuth />
+</div>

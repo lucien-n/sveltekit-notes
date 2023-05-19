@@ -1,12 +1,11 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import Checkbox from '$lib/components/Checkbox.svelte';
 	import NoNote from '$lib/components/NoNote.svelte';
 	import NoteCard from '$lib/components/NoteCard.svelte';
-	import { db } from '$lib/firebase';
+	import { getFireNotes } from '$lib/db';
 	import { noteStore, filterSettings, user, type Note, type FilterSettings } from '$lib/stores';
-	import { collection, getDocs, query } from '@firebase/firestore';
 	import { InputChip } from '@skeletonlabs/skeleton';
-	import { onMount } from 'svelte';
 
 	let getNotes: any;
 
@@ -17,17 +16,13 @@
 		$filterSettings.refresh++;
 	}
 
-	user.subscribe(async (usr) => {
-		const q = query(collection(db, 'notes', `${usr?.uid}`, 'notes'));
-		const querySnapshot = await getDocs(q);
-		querySnapshot.forEach((doc) => {
-			if ($noteStore.every((note) => note.id === doc.get('id'))) return;
-			$noteStore.push({
-				id: doc.get('id'),
-				content: doc.get('content'),
-				tags: doc.get('tags')
-			});
-		});
+	user.subscribe(async (user) => {
+		if (!user) return;
+		const firestoreNotes: Note[] = await getFireNotes(user.uid);
+		const notesToAdd: Note[] = firestoreNotes.filter(
+			(fireNote) => !$noteStore.some((note) => note.id === fireNote.id)
+		);
+		$noteStore.push(...notesToAdd);
 	});
 
 	async function filterNotes(settings: FilterSettings): Promise<Note[]> {
@@ -59,17 +54,19 @@
 		</h1>
 	{/if}
 
-	<div class="flex flex-row items-center gap-4">
-		<InputChip bind:value={$filterSettings.tags} name="filter-tags" />
-		<Checkbox
-			label="Match every"
-			on:click={() => ($filterSettings.matchEvery = !$filterSettings.matchEvery)}
-		/>
-	</div>
-	<hr />
+	{#if $noteStore.length > 0}
+		<div class="flex flex-row items-center gap-4">
+			<InputChip bind:value={$filterSettings.tags} name="filter-tags" />
+			<Checkbox
+				label="Match every"
+				on:click={() => ($filterSettings.matchEvery = !$filterSettings.matchEvery)}
+			/>
+		</div>
+		<hr />
+	{/if}
 	<div class="container mx-auto flex h-full flex-col gap-8">
 		{#if $noteStore.length > 0}
-			<div class="grid grid-cols-2 gap-4 md:grid-cols-3">
+			<div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
 				{#await getNotes then notes}
 					{#each notes as note}
 						<NoteCard {note} on:filter={addFilterTag} />

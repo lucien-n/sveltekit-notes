@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import NoteCard from '$lib/components/NoteCard.svelte';
-	import { db } from '$lib/firebase';
+	import { postFireNote } from '$lib/db';
 	import { noteStore, user } from '$lib/stores';
-	import { doc, setDoc } from '@firebase/firestore';
 	import { InputChip, toastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 
 	let tags: string[] = [];
@@ -11,7 +10,7 @@
 
 	const toast: ToastSettings = {
 		message: 'Note created successfully',
-		background: 'variant-filled-success'
+		background: 'variant-glass-success'
 	};
 
 	async function createNote(): Promise<void> {
@@ -23,7 +22,7 @@
 		noteStore.update((notes) => [...notes, note]);
 
 		if ($user) {
-			await setDoc(doc(db, 'notes', `${$user.uid}`, 'notes', note.id), note);
+			postFireNote($user.uid, note);
 		}
 
 		content = '';
