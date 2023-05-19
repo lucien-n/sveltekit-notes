@@ -1,12 +1,18 @@
 <script lang="ts">
-	import { noteStore } from '$lib/stores';
+	import { noteStore, type Note } from '$lib/stores';
 	import { drawerStore } from '@skeletonlabs/skeleton';
 	import NoNote from './NoNote.svelte';
 
-	const maxNoteContentLengthInDrawer = 24;
+	const maxNoteContentLengthInDrawer = 20;
 
 	function closeDrawer(): void {
 		drawerStore.close();
+	}
+
+	function formattedNoteContent(note: Note): string {
+		return `${note.content.slice(0, maxNoteContentLengthInDrawer)}${
+			note.content.length > maxNoteContentLengthInDrawer ? '...' : ''
+		}`;
 	}
 </script>
 
@@ -15,12 +21,7 @@
 		<ul>
 			{#each $noteStore as note}
 				<li>
-					<a on:click={closeDrawer} href="/edit/{note.id}"
-						>{note.content.slice(0, maxNoteContentLengthInDrawer)}{note.content.length >
-						maxNoteContentLengthInDrawer
-							? '...'
-							: ''}</a
-					>
+					<a on:click={closeDrawer} href="/edit/{note.id}">{formattedNoteContent(note)}</a>
 				</li>
 			{/each}
 		</ul>

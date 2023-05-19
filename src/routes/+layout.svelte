@@ -3,12 +3,7 @@
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	import '../app.postcss';
 	import { fly } from 'svelte/transition';
-	import {
-		AppShell,
-		Drawer,
-		Toast,
-		Modal
-	} from '@skeletonlabs/skeleton';
+	import { AppShell, Drawer, Toast, Modal } from '@skeletonlabs/skeleton';
 	import NavigationDrawer from '$lib/components/NavigationDrawer.svelte';
 	import NavigationBar from '$lib/components/NavigationBar.svelte';
 
@@ -22,7 +17,7 @@
 	<NavigationDrawer />
 </Drawer>
 
-<AppShell slotSidebarLeft="w-0 md:w-52 bg-surface-500/10 ">
+<AppShell slotSidebarLeft="w-0 md:w-80 bg-surface-500/10 ">
 	<svelte:fragment slot="header">
 		<NavigationBar />
 	</svelte:fragment>
