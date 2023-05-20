@@ -104,7 +104,7 @@
 	</div>
 	<div class="flex flex-wrap gap-1">
 		{#each note.tags as tag, i}
-			<NoteTag {tag} {i} />
+			<NoteTag {tag} {i} on:filter={() => dispatch('filter', tag)} />
 		{/each}
 	</div>
 </div>
