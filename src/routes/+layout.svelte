@@ -3,8 +3,7 @@
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	import '../app.postcss';
 	import { fly } from 'svelte/transition';
-	import { AppShell, Drawer, Toast, Modal } from '@skeletonlabs/skeleton';
-	import NavigationDrawer from '$lib/components/NavigationDrawer.svelte';
+	import { AppShell, Toast, Modal } from '@skeletonlabs/skeleton';
 	import NavigationBar from '$lib/components/NavigationBar.svelte';
 	import { noteStore, user } from '$lib/stores';
 	import { goto } from '$app/navigation';
@@ -12,9 +11,9 @@
 
 	export let data;
 
-	const unsubscribe = user.subscribe((usr) => {
-		if (!usr) return;
-		postFireNotes(usr.uid, $noteStore);
+	const _ = user.subscribe((fireUser) => {
+		if (!fireUser) return;
+		postFireNotes(fireUser.uid, $noteStore);
 		goto('/');
 	});
 </script>
@@ -22,16 +21,9 @@
 <Toast position="tr" />
 <Modal />
 
-<Drawer>
-	<NavigationDrawer />
-</Drawer>
-
 <AppShell slotSidebarLeft="w-0 md:w-80 lg:w-1/4 bg-surface-500/10 ">
 	<svelte:fragment slot="header">
 		<NavigationBar />
-	</svelte:fragment>
-	<svelte:fragment slot="sidebarLeft">
-		<NavigationDrawer />
 	</svelte:fragment>
 	<!-- Router Slot -->
 	{#key data.url}

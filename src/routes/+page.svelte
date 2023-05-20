@@ -1,13 +1,15 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { ListCycle } from '$lib/classes/list_cycle';
 	import Checkbox from '$lib/components/Checkbox.svelte';
 	import NoNote from '$lib/components/NoNote.svelte';
 	import NoteCard from '$lib/components/NoteCard.svelte';
+	import NoteRow from '$lib/components/NoteRow.svelte';
 	import { getFireNotes } from '$lib/db';
 	import { noteStore, filterSettings, user, type Note, type FilterSettings } from '$lib/stores';
 	import { InputChip } from '@skeletonlabs/skeleton';
 
 	let getNotes: any;
+	let displayMode: ListCycle = new ListCycle(['row', 'card']);
 
 	function addFilterTag(event: any): void {
 		let tag: string = event.detail;
@@ -61,18 +63,40 @@
 				label="Match every"
 				on:click={() => ($filterSettings.matchEvery = !$filterSettings.matchEvery)}
 			/>
+			<button
+				type="button"
+				class="btn variant-glass"
+				on:click={() => {
+					displayMode.next();
+					displayMode.refresh++;
+				}}
+			>
+				Switch to {displayMode.getNextUppered()}
+			</button>
 		</div>
 		<hr />
 	{/if}
 	<div class="container mx-auto flex h-full flex-col gap-8">
 		{#if $noteStore.length > 0}
-			<div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
-				{#await getNotes then notes}
-					{#each notes as note}
-						<NoteCard {note} on:filter={addFilterTag} />
-					{/each}
-				{/await}
-			</div>
+			{#key displayMode.changed()}
+				{#if displayMode.is('card')}
+					<div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
+						{#await getNotes then notes}
+							{#each notes as note}
+								<NoteCard {note} on:filter={addFilterTag} />
+							{/each}
+						{/await}
+					</div>
+				{:else if displayMode.is('row')}
+					<ul class="list-nav w-full gap-4 space-y-3">
+						{#await getNotes then notes}
+							{#each notes as note}
+								<NoteRow {note} on:filter={addFilterTag} />
+							{/each}
+						{/await}
+					</ul>
+				{/if}
+			{/key}
 		{:else}
 			<NoNote />
 		{/if}

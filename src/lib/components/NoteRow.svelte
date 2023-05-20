@@ -3,44 +3,51 @@
 	import { createEventDispatcher } from 'svelte';
 	import NoteTag from './NoteTag.svelte';
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
 
 	export let note: Note;
 	export let maxNoteContentLengthInDrawer: number = 20;
 
 	const dispatch = createEventDispatcher();
 
-	let focused: any;
 	let hovered: boolean = false;
+	let tagJustClicked: boolean = false;
 
 	function formattedNoteContent(note: Note): string {
 		return `${note.content.slice(0, maxNoteContentLengthInDrawer)}${
 			note.content.length > maxNoteContentLengthInDrawer ? '...' : ''
 		}`;
 	}
-
-	function isFocused(pathname: string): boolean {
-		return pathname.split('/').pop() === note.id;
-	}
-
-	const _ = page.subscribe((page) => {
-		focused = isFocused(page.url.pathname);
-	});
 </script>
 
 <li
 	on:mouseenter={() => (hovered = true)}
 	on:mouseleave={() => (hovered = false)}
 	class="rounded-[4px]"
-	class:variant-ghost-primary={focused}
 >
-	<a on:click={() => dispatch('close-drawer')} href="/edit/{note.id}" class="flex justify-between">
+	<button
+		type="button"
+		on:click={() => {
+			if (tagJustClicked) return;
+			if (browser) goto(`/edit/${note.id}`);
+		}}
+		class="flex w-full justify-between"
+	>
 		<span class="flex items-center gap-2 overflow-hidden">
 			{formattedNoteContent(note)}
 			{#each note.tags as tag, i}
-				<NoteTag {tag} {i} />
+				<NoteTag
+					{tag}
+					{i}
+					on:filter={() => {
+						tagJustClicked = true;
+						dispatch('filter', tag);
+					}}
+				/>
 			{/each}
 		</span>
-		<span class="opacity-60" class:opacity-100={hovered}>
+		<span class="opacity-70">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
@@ -56,5 +63,5 @@
 				/>
 			</svg>
 		</span>
-	</a>
+	</button>
 </li>
