@@ -18,6 +18,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Seton</title>
+</svelte:head>
+
 <Toast position="tr" />
 <Modal />
 
